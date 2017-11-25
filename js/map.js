@@ -29,7 +29,7 @@ var getRandomArray = function (parentArray) {
   var arrayCopy = parentArray.slice();
   var newArray = [];
   var newArrayLength = getRandomValue(0, arrayCopy.length);
-  for (var j = 0; j <= newArrayLength; j++) {
+  for (var j = 0; j < newArrayLength; j++) {
     newArray[j] = arrayCopy.splice(getRandomValue(0, arrayCopy.length), 1).join();
   }
 
