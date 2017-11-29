@@ -1,5 +1,6 @@
 'use strict';
 
+// Переменные
 var adTitles = ['Большая уютная квартира', 'Маленькая неуютная квартира', 'Огромный прекрасный дворец', 'Маленький ужасный дворец', 'Красивый гостевой домик', 'Некрасивый негостеприимный домик', 'Уютное бунгало далеко от моря', 'Неуютное бунгало по колено в воде'];
 var adTypes = ['flat', 'house', 'bungalo'];
 var adCheckins = ['12:00', '13:00', '14:00'];
@@ -9,13 +10,12 @@ var adFeatures = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'condit
 var pinTemplate = getComputedStyle(document.querySelector('.map__pin img'));
 var buttonTemplate = document.querySelector('template').content.querySelector('.map__pin');
 var pinHeight = parseInt(pinTemplate.height, 10);
-var fragmentPin = document.createDocumentFragment();
-var fragmentOffer = document.createDocumentFragment();
 var similarOfferTemplate = document.querySelector('template').content.querySelector('article.map__card');
 var map = document.querySelector('.map');
 var mapPin = map.querySelector('.map__pins');
 var ads = [];
 
+// Заполнение массива объявлениями
 var createAdsArray = function (adsAmount) {
   for (var k = 1; k <= adsAmount; k++) {
     ads.push(createAd(k));
@@ -24,6 +24,7 @@ var createAdsArray = function (adsAmount) {
   return ads;
 };
 
+// Шаблон объявления
 var createAd = function (adNumber) {
   var adObject = { };
   adObject.author = { };
@@ -68,10 +69,12 @@ var createAd = function (adNumber) {
   return adObject;
 };
 
+// Поиск случайного целого числа в диапозоне
 var getRandomNumber = function (min, max) {
   return Math.floor(Math.random() * (max + 1 - min)) + min;
 };
 
+// Создание массива случаной длины
 var getRandomArray = function (parentArray) {
   var arrayCopy = parentArray.slice();
   var newArray = [];
@@ -83,38 +86,45 @@ var getRandomArray = function (parentArray) {
   return arrayCopy;
 };
 
+// Поиск случайного элемента в массиве
 var getRandomArrayElement = function (array) {
   var randomElement = array[getRandomNumber(0, array.length - 1)];
 
   return randomElement;
 };
 
+// Создание url для аватара
 var createAvatarUrl = function (adNumber) {
-  var avatarZero = (adNumber < 10) ? 0 : false;
-  var avatarUrl = 'img/avatars/user' + avatarZero + adNumber + '.png';
+  var avatarNull = (adNumber < 10) ? 0 : false;
+  var avatarUrl = 'img/avatars/user' + avatarNull + adNumber + '.png';
 
   return avatarUrl;
 };
 
-createAdsArray(8);
+// Наполнение элементов по шаблону
+var createTemplate = function (adsArray, createAdTemplate, parentElementToAppendChild) {
+  var fragment = document.createDocumentFragment();
+  var createAdTemplateElement;
 
-document.querySelector('.map').classList.remove('map--faded');
-
-var createAdsMarker = function (adsArray) {
-  for (var l = 0; l < adsArray.length; l++) {
-    var adsPin = buttonTemplate.cloneNode(true);
-    var pinInitialX = adsArray[l].location.x;
-    var pinInitialY = adsArray[l].location.y - pinHeight;
-    adsPin.setAttribute('style', 'left: ' + pinInitialX + 'px; top: ' + pinInitialY + 'px;');
-    adsPin.querySelector('img').src = adsArray[l].author.avatar;
-    fragmentPin.appendChild(adsPin);
+  for (var l = 0, lengthOfArray = adsArray.length; l < lengthOfArray; l++) {
+    createAdTemplateElement = createAdTemplate(adsArray[l]);
+    fragment.appendChild(createAdTemplateElement);
   }
+  parentElementToAppendChild.appendChild(fragment);
 };
 
-createAdsMarker(ads);
+// Создание пина
+var createAdsMarker = function (adObject) {
+  var adsPin = buttonTemplate.cloneNode(true);
+  var pinInitialX = adObject.location.x;
+  var pinInitialY = adObject.location.y - pinHeight;
+  adsPin.setAttribute('style', 'left: ' + pinInitialX + 'px; top: ' + pinInitialY + 'px;');
+  adsPin.querySelector('img').src = adObject.author.avatar;
 
-mapPin.appendChild(fragmentPin);
+  return adsPin;
+};
 
+// Создание карточки объявления
 var renderAds = function (adObject) {
   var adElement = similarOfferTemplate.cloneNode(true);
   var paragraph = adElement.querySelectorAll('p');
@@ -146,8 +156,7 @@ var renderAds = function (adObject) {
   return adElement;
 };
 
-for (var m = 0; m < ads.length; m++) {
-  fragmentOffer.appendChild(renderAds(ads[m]));
-}
-
-map.insertBefore(fragmentOffer, map.children[1]);
+document.querySelector('.map').classList.remove('map--faded');
+createAdsArray(8);
+createTemplate(ads, createAdsMarker, mapPin);
+createTemplate(ads, renderAds, map);
