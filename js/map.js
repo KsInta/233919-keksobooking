@@ -15,35 +15,20 @@ var similarOfferTemplate = document.querySelector('template').content.querySelec
 var map = document.querySelector('.map');
 var mapPin = map.querySelector('.map__pins');
 var ads = [];
-var adsAmount = 8;
-var avatarPictures = [];
 
-for (var i = 0; i < adsAmount; i++) {
-  avatarPictures[i] = i + 1;
-}
-
-var getRandomNumber = function (min, max) {
-  return Math.floor(Math.random() * (max + 1 - min)) + min;
-};
-
-var getRandomArray = function (parentArray) {
-  var arrayCopy = parentArray.slice();
-  var newArray = [];
-  var newArrayLength = getRandomNumber(0, arrayCopy.length - 1);
-  for (var j = 0; j < newArrayLength; j++) {
-    newArray[j] = arrayCopy.splice(getRandomNumber(0, arrayCopy.length - 1), 1).join();
+var createAdsArray = function (adsAmount) {
+  for (var k = 1; k <= adsAmount; k++) {
+    ads.push(createAd(k));
   }
 
-  return newArray;
+  return ads;
 };
 
-var getRandomArrayElement = function (array) {
-  var randomElement = array[getRandomNumber(0, array.length - 1)];
-
-  return randomElement;
-};
-
-var createAd = function () {
+var createAd = function (adNumber) {
+  var adObject = { };
+  adObject.author = { };
+  adObject.offer = { };
+  adObject.location = { };
   var locationX = getRandomNumber(300, 900);
   var locationY = getRandomNumber(100, 500);
   var minPrice = 1000;
@@ -52,38 +37,63 @@ var createAd = function () {
   var maxRooms = 5;
   var minGuests = 1;
   var maxGuests = 20;
-  var adObject = {
-    'author': {
-      'avatar': 'img/avatars/user0' + avatarPictures.splice(getRandomNumber(0, avatarPictures.length - 1), 1) + '.png'
-    },
-    'offer': {
-      'title': adTitles.splice(getRandomNumber(0, adTitles.length - 1), 1).join(),
-      'address': locationX + ', ' + locationY,
-      'price': getRandomNumber(minPrice, maxPrice),
-      'type': getRandomArrayElement(adTypes),
-      'rooms': getRandomNumber(minRooms, maxRooms),
-      'guests': getRandomNumber(minGuests, maxGuests),
-      'checkin': adCheckins[getRandomNumber(0, adCheckins.length - 1)],
-      'checkout': adCheckouts[getRandomNumber(0, adCheckouts.length - 1)],
-      'features': getRandomArray(adFeatures),
-      'description': '',
-      'photos': []
-    },
-    'location': {
-      'x': locationX,
-      'y': locationY
-    }
-  };
+  var avatar = createAvatarUrl(adNumber);
+  var title = adTitles.splice(getRandomNumber(1, adTitles.length), 1).join();
+  var address = locationX + ', ' + locationY;
+  var price = getRandomNumber(minPrice, maxPrice);
+  var type = getRandomArrayElement(adTypes);
+  var rooms = getRandomNumber(minRooms, maxRooms);
+  var guests = getRandomNumber(minGuests, maxGuests);
+  var checkin = adCheckins[getRandomNumber(0, adCheckins.length - 1)];
+  var checkout = adCheckouts[getRandomNumber(0, adCheckouts.length - 1)];
+  var features = getRandomArray(adFeatures);
+  var description = '';
+  var photos = [];
+
+  adObject.author.avatar = avatar;
+  adObject.offer.title = title;
+  adObject.offer.address = address;
+  adObject.offer.price = price;
+  adObject.offer.type = type;
+  adObject.offer.rooms = rooms;
+  adObject.offer.guests = guests;
+  adObject.offer.checkin = checkin;
+  adObject.offer.checkout = checkout;
+  adObject.offer.features = features;
+  adObject.offer.description = description;
+  adObject.offer.photos = photos;
+  adObject.location.x = locationX;
+  adObject.location.y = locationY;
 
   return adObject;
 };
 
-var createAdsArray = function (adsAmount) {
-  for (var k = 0; k < adsAmount; k++) {
-    ads.push(createAd());
+var getRandomNumber = function (min, max) {
+  return Math.floor(Math.random() * (max + 1 - min)) + min;
+};
+
+var getRandomArray = function (parentArray) {
+  var arrayCopy = parentArray.slice();
+  var newArray = [];
+  var newArrayLength = getRandomNumber(0, arrayCopy.length);
+  for (var j = 0; j < newArrayLength; j++) {
+    newArray[j] = arrayCopy.splice(getRandomNumber(0, arrayCopy.length), 1).join();
   }
 
-  return ads;
+  return arrayCopy;
+};
+
+var getRandomArrayElement = function (array) {
+  var randomElement = array[getRandomNumber(0, array.length - 1)];
+
+  return randomElement;
+};
+
+var createAvatarUrl = function (adNumber) {
+  var avatarZero = (adNumber < 10) ? 0 : false;
+  var avatarUrl = 'img/avatars/user' + avatarZero + adNumber + '.png';
+
+  return avatarUrl;
 };
 
 createAdsArray(8);
@@ -95,9 +105,9 @@ var createAdsMarker = function (adsArray) {
     var adsPin = buttonTemplate.cloneNode(true);
     var pinInitialX = adsArray[l].location.x;
     var pinInitialY = adsArray[l].location.y - pinHeight;
-    adsPin.setAttribute('style', 'left: ' + String(pinInitialX) + 'px; top: ' + String(pinInitialY) + 'px;');
+    adsPin.setAttribute('style', 'left: ' + pinInitialX + 'px; top: ' + pinInitialY + 'px;');
     adsPin.querySelector('img').src = adsArray[l].author.avatar;
-    mapPin.appendChild(adsPin);
+    fragmentPin.appendChild(adsPin);
   }
 };
 
@@ -140,4 +150,4 @@ for (var m = 0; m < ads.length; m++) {
   fragmentOffer.appendChild(renderAds(ads[m]));
 }
 
-map.appendChild(fragmentOffer);
+map.insertBefore(fragmentOffer, map.children[1]);
