@@ -241,7 +241,7 @@ var closePopup = function () {
   }
 };
 
-// Закрытие карточки через escape
+// Закрытие карточки через esс
 var closePopupEsc = function (evt) {
   if (evt.keyCode === ESC_KEYCODE) {
     closePopup(evt);
