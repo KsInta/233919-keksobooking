@@ -15,9 +15,12 @@ var map = document.querySelector('.map');
 var mapPin = map.querySelector('.map__pins');
 var ads = [];
 var mainMapPin = map.querySelector('.map__pin--main');
+var mainMapPinPseudo = getComputedStyle(mainMapPin, ':after');
+var mainMapPinPseudoHeight = parseInt(mainMapPinPseudo.borderTopWidth, 10);
 var mainForm = document.querySelector('.notice__form');
 var formFieldsets = mainForm.querySelectorAll('.form__element');
-var pins = map.querySelectorAll('.map__pin:not(.map__pin--main)');
+
+var pins;
 var popup;
 var popupClose;
 var addressInput = mainForm.querySelector('#address');
@@ -54,7 +57,7 @@ var createAd = function (adNumber) {
   var minGuests = 1;
   var maxGuests = 20;
   var avatar = createAvatarUrl(adNumber);
-  var title = adTitles.splice(getRandomNumber(1, adTitles.length), 1).join();
+  var title = adTitles.splice(getRandomNumber(0, adTitles.length - 1), 1).join();
   var address = locationX + ', ' + locationY;
   var price = getRandomNumber(minPrice, maxPrice);
   var type = getRandomArrayElement(adTypes);
@@ -126,7 +129,7 @@ var createTemplate = function (adsArray, createAdTemplate, parentElementToAppend
 var createAdsMarker = function (adObject) {
   var adsPin = buttonTemplate.cloneNode(true);
   var pinInitialX = adObject.location.x;
-  var pinInitialY = adObject.location.y - pinHeight / 2;
+  var pinInitialY = adObject.location.y - pinHeight - mainMapPinPseudoHeight;
   adsPin.setAttribute('style', 'left: ' + pinInitialX + 'px; top: ' + pinInitialY + 'px;');
   adsPin.querySelector('img').src = adObject.author.avatar;
   return adsPin;
@@ -170,14 +173,8 @@ var renderMapCard = function (adObject) {
   return mapCard;
 };
 
-createAdsArray(8);
-renderMapCard(ads[0]);
-
-popup = map.querySelector('.map__card');
-popupClose = popup.querySelector('.popup__close');
-
 var chooseFieldsState = function (fields, disabled) {
-  for (var i = 0; i < fields.length; i++) {
+  for (i = 0; i < fields.length; i++) {
     fields[i].disabled = (disabled) ? true : false;
   }
 };
@@ -185,12 +182,14 @@ var chooseFieldsState = function (fields, disabled) {
 var activateMap = function () {
   map.classList.remove('map--faded');
   mainForm.classList.remove('notice__form--disabled');
-  createTemplate(ads, createAdsMarker, mapPin);
+  for (i = 0; i < pins.length; i++) {
+    pins[i].hidden = false;
+  }
   chooseFieldsState(formFieldsets, false);
 };
 
 var changePopup = function (target) {
-  for (var i = 0; i < ads.length; i++) {
+  for (i = 0; i < ads.length; i++) {
     if (target.firstChild.getAttribute('src') === ads[i].author.avatar) {
       renderAds(popup, ads[i]);
     }
@@ -202,11 +201,11 @@ var openPopup = function (evt) {
 
   while (target !== mapPin) {
     if (target.className === 'map__pin') {
-      for (var i = 0; i < pins.length; i++) {
+      for (i = 0; i < pins.length; i++) {
         pins[i].classList.remove('map__pin--active');
       }
-
       target.classList.add('map__pin--active');
+
       popup.classList.remove('hidden');
 
       changePopup(target);
@@ -222,7 +221,7 @@ var openPopup = function (evt) {
 
 var closePopup = function () {
   popup.classList.add('hidden');
-  for (var i = 0; i < pins.length; i++) {
+  for (i = 0; i < pins.length; i++) {
     pins[i].classList.remove('map__pin--active');
   }
 };
@@ -260,7 +259,7 @@ var onTimeOutSelectChange = function () {
 };
 
 var setMinValue = function () {
-  for (var i = 0; i < typeOptions.length; i++) {
+  for (i = 0; i < typeOptions.length; i++) {
     if (typeOptions[i].selected === true) {
       switch (typeOptions[i].value) {
         case 'bungalo':
@@ -281,7 +280,7 @@ var setMinValue = function () {
 };
 
 var setCapacity = function () {
-  for (var i = 0; i < capacityOptions.length; i++) {
+  for (i = 0; i < capacityOptions.length; i++) {
     capacityOptions[i].disabled = false;
   }
 
@@ -305,6 +304,17 @@ var setCapacity = function () {
     }
   }
 };
+
+createAdsArray(8);
+renderMapCard(ads[0]);
+createTemplate(ads, createAdsMarker, mapPin);
+pins = map.querySelectorAll('.map__pin:not(.map__pin--main)');
+popup = map.querySelector('.map__card');
+popupClose = popup.querySelector('.popup__close');
+
+for (var i = 0; i < pins.length; i++) {
+  pins[i].hidden = true;
+}
 
 popup.classList.add('hidden');
 chooseFieldsState(formFieldsets, true);
