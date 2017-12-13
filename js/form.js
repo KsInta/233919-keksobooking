@@ -14,14 +14,6 @@
   var capacitySelect = mainForm.querySelector('#capacity');
   var capacityOptions = capacitySelect.querySelectorAll('option');
 
-  window.form = {
-    chooseFieldsState: function (fields, disabled) {
-      for (var i = 0; i < fields.length; i++) {
-        fields[i].disabled = (disabled) ? true : false;
-      }
-    }
-  };
-
   var checkValidationAddressInput = function () {
     addressInput.setAttribute('readonly', '');
     addressInput.required = true;

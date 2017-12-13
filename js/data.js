@@ -8,27 +8,6 @@
   var adFeatures = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
   var ads = [];
 
-  var getRandomNumber = function (min, max) {
-    return Math.floor(Math.random() * (max + 1 - min)) + min;
-  };
-
-  var getRandomArray = function (parentArray) {
-    var arrayCopy = parentArray.slice();
-    var newArray = [];
-    var newArrayLength = getRandomNumber(0, arrayCopy.length);
-    for (var j = 0; j < newArrayLength; j++) {
-      newArray[j] = arrayCopy.splice(getRandomNumber(0, arrayCopy.length), 1).join();
-    }
-
-    return arrayCopy;
-  };
-
-  var getRandomArrayElement = function (array) {
-    var randomElement = array[getRandomNumber(0, array.length - 1)];
-
-    return randomElement;
-  };
-
   var createAvatarUrl = function (adNumber) {
     var avatarNull = (adNumber < 10) ? 0 : false;
     var avatarUrl = 'img/avatars/user' + avatarNull + adNumber + '.png';
@@ -37,12 +16,12 @@
   };
 
   var createAd = function (adNumber) {
-    var adObject = { };
-    adObject.author = { };
-    adObject.offer = { };
-    adObject.location = { };
-    var locationX = getRandomNumber(300, 900);
-    var locationY = getRandomNumber(100, 500);
+    var adObject = {};
+    adObject.author = {};
+    adObject.offer = {};
+    adObject.location = {};
+    var locationX = window.randomValue.getRandomNumber(300, 900);
+    var locationY = window.randomValue.getRandomNumber(100, 500);
     var minPrice = 1000;
     var maxPrice = 1000000;
     var minRooms = 1;
@@ -50,15 +29,15 @@
     var minGuests = 1;
     var maxGuests = 20;
     var avatar = createAvatarUrl(adNumber);
-    var title = adTitles.splice(getRandomNumber(0, adTitles.length - 1), 1).join();
+    var title = adTitles.splice(window.randomValue.getRandomNumber(0, adTitles.length - 1), 1).join();
     var address = locationX + ', ' + locationY;
-    var price = getRandomNumber(minPrice, maxPrice);
-    var type = getRandomArrayElement(adTypes);
-    var rooms = getRandomNumber(minRooms, maxRooms);
-    var guests = getRandomNumber(minGuests, maxGuests);
-    var checkin = adCheckins[getRandomNumber(0, adCheckins.length - 1)];
-    var checkout = adCheckouts[getRandomNumber(0, adCheckouts.length - 1)];
-    var features = getRandomArray(adFeatures);
+    var price = window.randomValue.getRandomNumber(minPrice, maxPrice);
+    var type = window.randomValue.getRandomArrayElement(adTypes);
+    var rooms = window.randomValue.getRandomNumber(minRooms, maxRooms);
+    var guests = window.randomValue.getRandomNumber(minGuests, maxGuests);
+    var checkin = adCheckins[window.randomValue.getRandomNumber(0, adCheckins.length - 1)];
+    var checkout = adCheckouts[window.randomValue.getRandomNumber(0, adCheckouts.length - 1)];
+    var features = window.randomValue.getRandomArray(adFeatures);
     var description = '';
     var photos = [];
 
