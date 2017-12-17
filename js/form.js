@@ -96,4 +96,12 @@
   roomAmountSelect.addEventListener('change', onSetCapacityChange);
 
   mainForm.setAttribute('action', 'https://js.dump.academy/keksobooking');
+
+  window.form = {
+    toggleFormFieldsetsAbility: function (fields, disabled) {
+      for (var i = 0; i < fields.length; i++) {
+        fields[i].disabled = (disabled) ? true : false;
+      }
+    }
+  };
 })();

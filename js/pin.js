@@ -8,7 +8,9 @@
   var pinHeight = parseInt(pinTemplate.height, 10);
   var mainMapPinPseudo = getComputedStyle(mainMapPin, ':after');
   var mainMapPinPseudoHeight = parseInt(mainMapPinPseudo.borderTopWidth, 10);
+  var popup = map.querySelector('.map__card');
   var mainForm = document.querySelector('.notice__form');
+  var formFieldsets = mainForm.querySelectorAll('.form__element');
   var addressInput = mainForm.querySelector('#address');
 
   var createTemplate = function (adsArray, createAdTemplate, parentElementToAppendChild) {
@@ -32,24 +34,52 @@
     return adsPin;
   };
 
-  window.pin = {
-    renderMapPins: function () {
-      createTemplate(window.data.ads, createAdsMarker, mapPin);
-    },
+  var activateMap = function () {
+    map.classList.remove('map--faded');
+    mainForm.classList.remove('notice__form--disabled');
+    for (var i = 0; i < mapPins.length; i++) {
+      mapPins[i].hidden = false;
+    }
+    window.form.toggleFormFieldsetsAbility(formFieldsets, false);
+  };
 
-    toggleFormFieldsetsAbility: function (fields, disabled) {
-      for (var i = 0; i < fields.length; i++) {
-        fields[i].disabled = (disabled) ? true : false;
+  var openPopup = function (evt) {
+    var target = evt.target;
+
+    while (target !== mapPin) {
+      if (target.className === 'map__pin') {
+        for (var i = 0; i < mapPins.length; i++) {
+          mapPins[i].classList.remove('map__pin--active');
+        }
+        target.classList.add('map__pin--active');
+
+        popup.classList.remove('hidden');
+
+        window.card.changePopup(target);
+
+        document.addEventListener('keydown', window.map.closePopupEsc);
+
+        break;
       }
+
+      target = target.parentNode;
     }
   };
 
+  var renderMapPins = function () {
+    createTemplate(window.data.ads, createAdsMarker, mapPin);
+  };
+
+  renderMapPins();
+
+  var mapPins = mapPin.querySelectorAll('.map__pin:not(.map__pin--main)');
+
   mainMapPin.addEventListener('mouseup', function () {
-    window.map.activateMap();
+    activateMap();
   });
 
   mapPin.addEventListener('click', function (evt) {
-    window.map.openPopup(evt);
+    openPopup(evt);
   });
 
   mainMapPin.addEventListener('mousedown', function (evt) {
